@@ -130,24 +130,24 @@ mostBytes(){
 executeCommand(){
 	echo ""
 	case $2 in
-		-c) echo Which IP address makes the most number of connection attempts?
+		-c) echo ">>" Which IP address makes the most number of connection attempts?
 			connectionAttempts $1 $3
 			;;
-		-2) echo Which address makes the most number of successful attempts?
+		-2) echo ">>" Which address makes the most number of successful attempts?
 			successfulConnections $1 $3
 			;;
-		-r) echo What are the most common results codes and where do they come from?
+		-r) echo ">>" What are the most common results codes and where do they come from?
 			mostResultCodes $1 $3
 			;;
-		-F) echo What are the most common result codes that indicate failure and where do they come from?
+		-F) echo ">>" What are the most common result codes that indicate failure and where do they come from?
 			failureConnections $1 $3
 			;;
-		-t) echo Which IP number get the most bytes sent to them?
+		-t) echo ">>" Which IP number get the most bytes sent to them?
 			mostBytes $1 $3
 			;;
-		-e) echo Checking for blacklists
+		-e) echo ">>" Checking for blacklists
 			;;
-		*) echo nothing
+		*) echo ">>" nothing
 			;;
 	esac
 
@@ -168,10 +168,10 @@ if [ $# -gt 0 ]; then
 	readOptions $@
 
 	echo ""
-	echo Filename "$FILE"
-	echo OPP "$OPP"
-	echo LIMIT "$LIMIT"
-	echo BL "$CHECKBLACKLIST"
+	echo -e Filename "\t: $FILE"
+	echo -e Opperation "\t: $OPP"
+	echo -e Limit "\t\t: $LIMIT"
+	echo Check blacklist ": $CHECKBLACKLIST"
 	echo ""
 
 	executeCommand $LIMIT $OPP $FILE
