@@ -128,8 +128,7 @@ mostBytes(){
 
 #print opperation instructions
 executeCommand(){
-	echo
-	echo
+	echo ""
 	case $2 in
 		-c) echo Which IP address makes the most number of connection attempts?
 			connectionAttempts $1 $3
@@ -152,8 +151,7 @@ executeCommand(){
 			;;
 	esac
 
-	echo
-	echo
+	echo ""
 }
 
 
