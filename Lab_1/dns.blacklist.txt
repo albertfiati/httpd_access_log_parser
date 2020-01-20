@@ -1,4 +1,4 @@
-usemaxserver.de
+/usemaxserver.de
 klickthru.com
 gsmtop.net
 buzzcity.net
@@ -53,3 +53,5 @@ transpera.com
 mobilityware.com
 indiana.edu
 telia.com
+utfors.se
+ericsson.net
