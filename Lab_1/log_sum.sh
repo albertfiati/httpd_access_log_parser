@@ -1,5 +1,8 @@
 #!/bin/bash
 LIMIT=-1
+IP_TABLE=ip.table.txt
+BLACKLISTED_DNS=dns.blacklist.txt
+
 
 #read options from the terminal
 readOptions(){
@@ -28,16 +31,24 @@ readOptions(){
 
 #check if IP has been blacklisted
 iPIsBlackListed(){
-	DOMAIN=$(nslookup $1 | grep 'name*.*.$' | awk '{print $4}' |  rev | cut -d"." -f2,3 | rev)
+	if [ -f "$BLACKLISTED_DNS" ]; then
+		DOMAIN=$(grep $1 $IP_TABLE | head -1 | awk '{print $2}')
 
-	#check if the string is empty
-	if [[ ${#DOMAIN} -gt 0 ]]; then
-		#echo $(grep "$DOMAIN" dns.blacklist.txt)
-
-		#checking if the IP is blacklisted
-		if grep -q "$DOMAIN" dns.blacklist.txt ; then
-			echo blacklisted
+		if [[ ! ${#DOMAIN} -gt 0 ]]; then
+			DOMAIN=$(nslookup $1 | grep 'name*.*.$' | awk '{print $4}' |  rev | cut -d"." -f2,3 | rev)	
+			echo -e $1 "\t " $DOMAIN >> $IP_TABLE
 		fi
+
+		#check if the string is empty
+		if [[ ${#DOMAIN} -gt 0 ]]; then
+			#checking if the IP is blacklisted
+			if grep -q "$DOMAIN" "$BLACKLISTED_DNS"; then
+				echo *Blacklisted*
+			fi
+		fi
+		
+	else
+		echo file not found
 	fi
 }
 
@@ -98,12 +109,12 @@ mostResultCodes(){
 		echo    --------------------------------------------------
 		cat $2 | awk '{print $9}' | sort -r | uniq -d | awk '{print $1}' | while read code
 		do
-			echo ""
+			echo "sss"
 			cat $2 | awk '{print $9 "\t" $1}' | grep "^$code" | sort | uniq -c | sort -r | awk '{print $2 "\t " $3}' | head -$1 | while IFS=" " read -r -a line; do 
-				IP_ADD=${line[0]}
-				CODE=${line[1]}
+				IP_ADD=${line[1]}
+				CODE=${line[0]}
 
-				echo -e $IP_ADD "\t" $CODE "\t" $(iPIsBlackListed $IP_ADD)
+				echo -e $CODE "\t " $IP_ADD "\t " $(iPIsBlackListed $IP_ADD)
 			done
 		done
 	else
@@ -147,7 +158,7 @@ failureConnections(){
 		echo    -----------------------------------
 		cat $2 | awk '{print $9}' | sort -r | uniq -d | awk '{print $1}' | grep "^[4-5]" | while read code
 		do
-			echo ""
+			echo "sdsdsds"
 			cat $2 | awk '{print $9 "\t" $1}' | grep "^$code" | sort | uniq -c | sort -r | awk '{print $2 "\t" $3}' | head -$1
 		done
 	fi
@@ -206,6 +217,12 @@ executeCommand(){
 	echo ""
 }
 
+createIPTables(){
+	[ ! -f "$IP_TABLE" ] $$ touch $IP_TABLE || $(> $IP_TABLE)
+	
+	echo -e IP Address "\t "  Domain >> $IP_TABLE
+	echo -e ------------------------------- >> $IP_TABLE
+}
 
 #clear
 echo "***************************************************************************"
@@ -237,6 +254,7 @@ if [ $# -gt 0 ]; then
 	echo Check blacklist ": $CHECKBLACKLIST"
 	echo ""
 
+	createIPTables
 	executeCommand $LIMIT $OPP $FILE
 else
 	echo "Invalid command. See help below"
