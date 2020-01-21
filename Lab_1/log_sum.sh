@@ -109,7 +109,7 @@ mostResultCodes(){
 		echo    --------------------------------------------------
 		cat $2 | awk '{print $9}' | sort -r | uniq -d | awk '{print $1}' | while read code
 		do
-			echo "sss"
+			echo ""
 			cat $2 | awk '{print $9 "\t" $1}' | grep "^$code" | sort | uniq -c | sort -r | awk '{print $2 "\t " $3}' | head -$1 | while IFS=" " read -r -a line; do 
 				IP_ADD=${line[1]}
 				CODE=${line[0]}
@@ -158,7 +158,7 @@ failureConnections(){
 		echo    -----------------------------------
 		cat $2 | awk '{print $9}' | sort -r | uniq -d | awk '{print $1}' | grep "^[4-5]" | while read code
 		do
-			echo "sdsdsds"
+			echo ""
 			cat $2 | awk '{print $9 "\t" $1}' | grep "^$code" | sort | uniq -c | sort -r | awk '{print $2 "\t" $3}' | head -$1
 		done
 	fi
@@ -218,7 +218,11 @@ executeCommand(){
 }
 
 createIPTables(){
-	[ ! -f "$IP_TABLE" ] $$ touch $IP_TABLE || $(> $IP_TABLE)
+	if [ ! -f "$IP_TABLE" ]; then
+		touch $IP_TABLE
+	else
+		$(> $IP_TABLE)
+	fi
 	
 	echo -e IP Address "\t "  Domain >> $IP_TABLE
 	echo -e ------------------------------- >> $IP_TABLE
